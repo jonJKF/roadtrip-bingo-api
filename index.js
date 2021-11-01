@@ -17,7 +17,11 @@ router.get("/new-board",  async request => {
     const json = await BINGO_API.get("collectables")
     const collectables = JSON.parse(json)
     const selection = collectables.sort(() => Math.random() - 0.5).slice(0, 25)
-    return new Response(JSON.stringify(selection, null, 2), {headers: headers})
+    const board = {
+      name: "New Board",
+      collectables: selection
+    }
+    return new Response(JSON.stringify(board, null, 2), {headers: headers})
   } catch (e) {
     console.dir(e)
     return "error :("
