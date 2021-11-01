@@ -3,66 +3,53 @@ import { Router } from 'itty-router'
 // Create a new router
 const router = Router()
 
-/*
-Our index route, a simple hello world.
-*/
-router.get("/", () => {
-  return new Response("Hello, world! This is the root page of your Worker template.")
-})
+let headers = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
+  "Access-Control-Max-Age": "86400",
+}
 
-/*
-This route demonstrates path parameters, allowing you to extract fragments from the request
-URL.
 
-Try visit /example/hello and see the response.
-*/
-router.get("/example/:text", ({ params }) => {
-  // Decode text like "Hello%20world" into "Hello world"
-  let input = decodeURIComponent(params.text)
-
-  // Construct a buffer from our input
-  let buffer = Buffer.from(input, "utf8")
-
-  // Serialise the buffer into a base64 string
-  let base64 = buffer.toString("base64")
-
-  // Return the HTML with the string to the client
-  return new Response(`<p>Base64 encoding: <code>${base64}</code></p>`, {
-    headers: {
-      "Content-Type": "text/html"
-    }
-  })
-})
-
-/*
-This shows a different HTTP method, a POST.
-
-Try send a POST request using curl or another tool.
-
-Try the below curl command to send JSON:
-
-$ curl -X POST <worker> -H "Content-Type: application/json" -d '{"abc": "def"}'
-*/
-router.post("/post", async request => {
-  // Create a base object with some fields.
-  let fields = {
-    "asn": request.cf.asn,
-    "colo": request.cf.colo
+router.get("/new-board", () => {
+  let i = 0;
+  let collectables = [
+    {"id": ++i, "description":  "See a cow"},
+    {"id": ++i, "description":  "See a sheep"},
+    {"id": ++i, "description":  "See a pink car"},
+    {"id": ++i, "description":  "See a yellow car"},
+    {"id": ++i, "description":  "See a red car"},
+    {"id": ++i, "description":  "See a green lorry"},
+    {"id": ++i, "description":  "See a red lorry"},
+    {"id": ++i, "description":  "See a tanker lorry"},
+    {"id": ++i, "description":  "See a recovery lorry"},
+    {"id": ++i, "description":  "See a police car"},
+    {"id": ++i, "description":  "See a fire engine"},
+    {"id": ++i, "description":  "See a motorbike"},
+    {"id": ++i, "description":  "See a caravan"},
+    {"id": ++i, "description":  "See a campervan"},
+    {"id": ++i, "description":  "See a boat"},
+    {"id": ++i, "description":  "See a 2 door sports car"},
+    {"id": ++i, "description":  "Average speed camera"},
+    {"id": ++i, "description":  "Flashing blue lights"},
+    {"id": ++i, "description":  "Flashing orange lights"},
+    {"id": ++i, "description":  "Thunderstorm"},
+    {"id": ++i, "description":  "Snow"},
+    {"id": ++i, "description":  "Diversion!"},
+    {"id": ++i, "description":  "Road works!"},
+    {"id": ++i, "description":  "Broken down car!"},
+    {"id": ++i, "description":  "Are we there yet?!"},
+    {"id": ++i, "description":  "Took a wrong turn!"},
+    {"id": ++i, "description":  "See a passenger train"},
+    {"id": ++i, "description":  "See a freight train"},
+    {"id": ++i, "description":  "See a bus"},
+    {"id": ++i, "description":  "See a purple car"},
+  ];
+  let board = {
+    name: "New Board",
+    collectables: collectables.sort(() => .5 - Math.random()).slice(0,25)
   }
-
-  // If the POST data is JSON then attach it to our response.
-  if (request.headers.get("Content-Type") === "application/json") {
-    fields["json"] = await request.json()
-  }
-
-  // Serialise the JSON to a string.
-  const returnData = JSON.stringify(fields, null, 2);
-
-  return new Response(returnData, {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
+  return new Response(JSON.stringify(board, null, 2), {headers: headers})
 })
 
 /*
