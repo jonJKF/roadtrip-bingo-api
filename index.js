@@ -8,48 +8,20 @@ let headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
   "Access-Control-Max-Age": "86400",
+  "Cache-Control": "no-store, max-age=0",
 }
 
 
-router.get("/new-board", () => {
-  let i = 0;
-  let collectables = [
-    {"id": ++i, "description":  "See a cow"},
-    {"id": ++i, "description":  "See a sheep"},
-    {"id": ++i, "description":  "See a pink car"},
-    {"id": ++i, "description":  "See a yellow car"},
-    {"id": ++i, "description":  "See a red car"},
-    {"id": ++i, "description":  "See a green lorry"},
-    {"id": ++i, "description":  "See a red lorry"},
-    {"id": ++i, "description":  "See a tanker lorry"},
-    {"id": ++i, "description":  "See a recovery lorry"},
-    {"id": ++i, "description":  "See a police car"},
-    {"id": ++i, "description":  "See a fire engine"},
-    {"id": ++i, "description":  "See a motorbike"},
-    {"id": ++i, "description":  "See a caravan"},
-    {"id": ++i, "description":  "See a campervan"},
-    {"id": ++i, "description":  "See a boat"},
-    {"id": ++i, "description":  "See a 2 door sports car"},
-    {"id": ++i, "description":  "Average speed camera"},
-    {"id": ++i, "description":  "Flashing blue lights"},
-    {"id": ++i, "description":  "Flashing orange lights"},
-    {"id": ++i, "description":  "Thunderstorm"},
-    {"id": ++i, "description":  "Snow"},
-    {"id": ++i, "description":  "Diversion!"},
-    {"id": ++i, "description":  "Road works!"},
-    {"id": ++i, "description":  "Broken down car!"},
-    {"id": ++i, "description":  "Are we there yet?!"},
-    {"id": ++i, "description":  "Took a wrong turn!"},
-    {"id": ++i, "description":  "See a passenger train"},
-    {"id": ++i, "description":  "See a freight train"},
-    {"id": ++i, "description":  "See a bus"},
-    {"id": ++i, "description":  "See a purple car"},
-  ];
-  let board = {
-    name: "New Board",
-    collectables: collectables.sort(() => .5 - Math.random()).slice(0,25)
-  }
-  return new Response(JSON.stringify(board, null, 2), {headers: headers})
+router.get("/new-board",  async request => {
+  try {
+    const json = await BINGO_API.get("collectables")
+    const collectables = JSON.parse(json)
+    const selection = collectables.sort(() => Math.random() - 0.5).slice(0, 25)
+    return new Response(JSON.stringify(selection, null, 2), {headers: headers})
+  } catch (e) {
+    console.dir(e)
+    return "error :("
+  }  
 })
 
 /*
